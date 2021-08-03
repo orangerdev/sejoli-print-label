@@ -1,0 +1,7 @@
+{
+    "require": {
+        "tareq1988/wp-eloquent": "dev-master",
+        "spipu/html2pdf": "^5.2",
+        "dompdf/dompdf": "^1.0"
+    }
+}
