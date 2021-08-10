@@ -1,9 +1,11 @@
 <?php
 namespace Sejoli_Print_Label;
-require_once SEJOLI_PRINT_LABEL_DIR . 'vendor/autoload.php';
-use Spipu\Html2Pdf\Html2Pdf;
 
-// wp-content/plugins/yourplugin/yourplugin.php
+require_once SEJOLI_PRINT_LABEL_DIR . 'vendor/autoload.php';
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 // Set up paths to include DOMPDF
 $plugin_path = plugin_dir_path( __FILE__ );
 define( 'SEJOLI_JNE_DOMPDF', $plugin_path . 'vendor/dompdf/' );
@@ -12,11 +14,6 @@ define( 'SEJOLI_JNE_DOMPDF', $plugin_path . 'vendor/dompdf/' );
 $upload_dir = wp_upload_dir();
 define( 'SEJOLI_JNE_UPLOAD_DIR', $upload_dir['basedir'] . '/label-pengiriman');
 define( 'SEJOLI_JNE_UPLOAD_URL', $upload_dir['baseurl'] . '/label-pengiriman');
-
-// include( SEJOLI_JNE_DOMPDF . 'autoload.inc.php' );
-use Dompdf\Dompdf;
-use Dompdf\Options;
-
 
 /**
  * The admin-specific functionality of the plugin.
@@ -118,7 +115,7 @@ class Admin {
 
 		wp_localize_script( $this->plugin_name, 'sejoli_print_label', array(
 			'print_shipment_label' => array(
-				'ajaxurl'	=> add_query_arg(array(
+				'ajaxurl' => add_query_arg(array(
 						'action' => 'sejoli-print-shipment-label'
 					), admin_url('admin-ajax.php')
 				),
@@ -158,11 +155,14 @@ class Admin {
 
     }
 
+    /**
+     * Process Print Shipment Label
+     * Hooked via wp_ajax_sejoli-print-shipment-label, priority 1
+     * @since   1.0.0
+     * @return  json
+     */
 	public function print_shipment_label(){
-		// if ( ! $html = yourplugin_generate_invoice_html( $order_id ) ) {
-		//   return;
-		// }
-		// 
+		
 		$params = wp_parse_args( $_POST, array(
             'orders' => NULL,
             'nonce'  => NULL
@@ -184,19 +184,20 @@ class Admin {
 	        if(false !== $response['valid']) :
 
 			  	$html = '';
-			  	$html .= '<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="utf-8"></head><body>';
-				$html .= '<div class="labelarea" style="width:100%; height: 100%; display:inline-block; margin-top: 0em; -moz-column-count: 2; -webkit-column-count: 2; column-count: 2; width: 100%;">';
+			  	$html .= '<html><head><meta charset="utf-8"></head><body>';
+				$html .= '<div class="labelarea" style="width:100%; height: 100%; display:inline-block; margin-top: 0em; width: 100%;">';
+				$count = 1;
 				foreach ($response['orders'] as $value) {
 					$receiver_destination_id   = $value->meta_data['shipping_data']['district_id'];
         			$receiver_destination_city = $this->get_subdistrict_detail($receiver_destination_id);
 					$shipper_origin_id   	   = $value->product->shipping['origin'];
         			$shipper_origin_city 	   = $this->get_subdistrict_detail($shipper_origin_id);
-        			$html .= '<div class="label-item" style="width: 88.5mm; height: auto; border: 2px solid #000; margin-top: 0.5em; margin-right: 0.5em; margin-bottom: 5mm; float:left; padding: 10px; ">';
+        			$html .= '<div class="label-item" style="width: 88.5mm; height: auto; border: 2px solid #000; margin-top: 0.5em; margin-right: 0.5em; margin-bottom: 5mm; float:left; padding: 10px;">';
 						$html .= '<table style="width: 88.5mm">';
 							$html .= '<thead text-align: left;">';
 								$html .= '<tr style="vertical-align: middle;">';
 									$html .= '<td style="width: 43.05mm"><b>INV #'.$value->ID.'</b></td>';
-									$html .= '<td style="width: 43.05mm"><b>Label Pengiriman</b></td>';
+									$html .= '<td style="width: 43.05mm"><b>'.__('Label Pengiriman', 'sejoli-print-label').'</b></td>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
 									$html .= '<td style="width: 43.05mm"><div style="height: 4px;"></div></td>';
@@ -213,19 +214,19 @@ class Admin {
 							$html .= '</thead>';
 							$html .= '<tbody>';
 								$html .= '<tr style="vertical-align: middle;">';
-									$html .= '<td style="width: 43.05mm">Kurir</td>';
+									$html .= '<td style="width: 43.05mm">'.__('Kurir', 'sejoli-print-label').'</td>';
 									$html .= '<td style="width: 43.05mm"><b>'.$value->meta_data['shipping_data']['courier'].' - '.$value->meta_data['shipping_data']['service'].'</b></td>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
-									$html .= '<td style="width: 43.05mm">Ongkir</td>';
+									$html .= '<td style="width: 43.05mm">'.__('Ongkir', 'sejoli-print-label').'</td>';
 									$html .= '<td style="width: 43.05mm"><b>'.sejolisa_price_format($value->meta_data['shipping_data']['cost']).'</b></td>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
-									$html .= '<td style="width: 43.05mm">Berat</td>';
+									$html .= '<td style="width: 43.05mm">'.__('Berat', 'sejoli-print-label').'</td>';
 									$html .= '<td style="width: 43.05mm"><b>'.$value->product->shipping['weight'].' gram</b></td>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
-									$html .= '<td style="width: 43.05mm">Pembayaran</td>';
+									$html .= '<td style="width: 43.05mm">'.__('Pembayaran', 'sejoli-print-label').'</td>';
 									$html .= '<td style="width: 43.05mm"><b>'.$value->payment_gateway.'</b></td>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
@@ -233,8 +234,8 @@ class Admin {
 									$html .= '<td style="width: 43.05mm">&nbsp;</td>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
-									$html .= '<td style="width: 43.05mm"><b>PENGIRIM</b></td>';
-									$html .= '<td style="width: 43.05mm"><b>PENERIMA</b></td>';
+									$html .= '<td style="width: 43.05mm"><b>'.__('PENGIRIM', 'sejoli-print-label').'</b></td>';
+									$html .= '<td style="width: 43.05mm"><b>'.__('PENERIMA', 'sejoli-print-label').'</b></td>';
 								$html .= '</tr>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
@@ -257,8 +258,8 @@ class Admin {
 									$html .= '<td style="width: 43.05mm"><div style="height: 1px;"></div></td>';
 									$html .= '<td style="width: 43.05mm"><div style="height: 1px;"></div></td>';
 								$html .= '<tr style="vertical-align: middle;">';
-									$html .= '<td style="width: 43.05mm"><b>QTY</b></td>';
-									$html .= '<td style="width: 43.05mm"><b>PRODUK</b></td>';
+									$html .= '<td style="width: 43.05mm"><b>'.__('QTY', 'sejoli-print-label').'</b></td>';
+									$html .= '<td style="width: 43.05mm"><b>'.__('PRODUK', 'sejoli-print-label').'</b></td>';
 								$html .= '</tr>';
 								$html .= '<tr style="vertical-align: middle;">';
 									$html .= '<td style="width: 43.05mm">'.$value->quantity.'</td>';
@@ -277,11 +278,16 @@ class Admin {
 									$html .= '<td style="width: 43.05mm"><div style="height: 1px;"></div></td>';
 								$html .= '<tr style="vertical-align: middle;">';
 									$html .= '<td style="width: 43.05mm">&nbsp;</td>';
-									$html .= '<td style="width: 43.05mm"><b>Total: '.sejolisa_price_format($value->grand_total).'</b></td>';
+									$html .= '<td style="width: 43.05mm"><b>'.__('TOTAL', 'sejoli-print-label').': '.sejolisa_price_format($value->grand_total).'</b></td>';
 								$html .= '</tr>';
 							$html .= '</tbody>';
 						$html .= '</table>';
 					$html .= '</div>';
+					if ($count%2 == 0)
+				    {
+						$html .= '<div style="clear:both"></div>';
+				    }
+				    $count++;
 				}
 				$html .= '</div>';
 		    	$html .= '</body></html>';
@@ -293,152 +299,17 @@ class Admin {
 		$options = new Options();
 		$options->set('isRemoteEnabled', true);
 		$dompdf = new Dompdf($options);
-
 		$dompdf->load_html($html);
-		// $dompdf->load_html_file(plugin_dir_url( __FILE__ ) . '/label-pengiriman.php');
 		$dompdf->setPaper('P', 'A4', 'portrait');
 		$dompdf->render();
 		$output = $dompdf->output();
 		wp_mkdir_p( SEJOLI_JNE_UPLOAD_DIR );
-		// $file_name = 'order-'.$order_id.'.pdf';
 		$file_name = 'label-pengiriman-'.date("Y-m-d h:i:sa").'.pdf';
 		$file_path = SEJOLI_JNE_UPLOAD_DIR . '/'. $file_name;
 		file_put_contents( $file_path, $output);
 		$invoice_url = SEJOLI_JNE_UPLOAD_URL . '/'. $file_name;
 		return wp_send_json($invoice_url);
+	
 	}
-
-	/**
-     * Process Print Shipment Label
-     * Hooked via wp_ajax_sejoli-print-shipment-label, priority 1
-     * @since   1.0.0
-     * @return  json
-     */
-	// public function print_shipment_label(){
-	// 	$params = wp_parse_args( $_POST, array(
- //            'orders' => NULL,
- //            'nonce'  => NULL
- //        ));
-
- //        $respond = [
- //            'valid'   => false,
- //            'message' => NULL
- //        ];
-
- //        $html = '';
-
- //        if( wp_verify_nonce( $params['nonce'], 'sejoli-print-shipment-label') ) :
-
- //            unset( $params['nonce'] );
-  
-	//         $response = sejolisa_get_orders(['ID' => $params['orders'] ]);
-
-	//         if(false !== $response['valid']) :
-	        	
-	//         	// foreach ($response['orders'] as $value) {
-
-	//         	// }
-
- //        		// $html .= '<script type="text/javascript">';
- //    			$html .= 'alert("ok coy");';
- //    			// $html .= "var divToPrint = document.getElementById('labelarea');";
-	// 	       	// $html .= "var popupWin = window.open('', '_blank', 'width=300,height=300');";
-	// 	       	$html .= "var popupWin = window.open('application/pdf', 'about:blank');";
-	// 	       	$html .= "popupWin.document.open();";
-	// 	       	$html .= "popupWin.document.write('<html><body>');";
-	//             // $html .= "popupWin.document.write('<h1>Div contentsd are <br>');";
- //        		$html .= "popupWin.document.write('<div class=\"labelarea\">');";
-	// 				foreach ($response['orders'] as $value) {
-	// 					// $html .= "popupWin.document.write('<div class=\"label-item\" style=\" width: 30%; height: 350px; border: 2px solid #000; margin-top: 0.5em; margin-right: 0.5em; float: left; padding: 10px; \">');";
-	// 					// 	$html .= "popupWin.document.write('".$value->ID."');";
-	// 					// 	$html .= "popupWin.document.write('<hr></hr>');";
-	// 					// $html .= "popupWin.document.write('</div>');";
-						
-	// 					$receiver_destination_id   = $value->meta_data['shipping_data']['district_id'];
- //            			$receiver_destination_city = $this->get_subdistrict_detail($receiver_destination_id);
-	// 					$shipper_origin_id   	   = $value->product->shipping['origin'];
- //            			$shipper_origin_city 	   = $this->get_subdistrict_detail($shipper_origin_id);
-
-	// 					$html .= "popupWin.document.write('<table class=\"label-item\" style=\" width: 30%; height: 350px; border: 2px solid #000; margin-top: 0.5em; margin-right: 0.5em; float: left; padding: 10px; \">');";
-	// 						$html .= "popupWin.document.write('<thead style=\"border: 1px solid #000; text-align: left;\">');";
-	// 							$html .= "popupWin.document.write('<tr>');";
-	// 								$html .= "popupWin.document.write('<th style=\"width: 50%\">INV #".$value->ID."</th>');";
-	// 								$html .= "popupWin.document.write('<th style=\"width: 50%\">Label Pengiriman</th>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr>');";
-	// 								$html .= "popupWin.document.write('<th style=\"width: 50%\"><hr></hr></th>');";
-	// 								$html .= "popupWin.document.write('<th style=\"width: 50%\"><hr></hr></th>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 						$html .= "popupWin.document.write('</thead>');";
-	// 						$html .= "popupWin.document.write('<tbody>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: middle;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">Kurir</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>".$value->meta_data['shipping_data']['courier']." - ".$value->meta_data['shipping_data']['service']."</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">Ongkir</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>".sejolisa_price_format($value->meta_data['shipping_data']['cost'])."</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">Berat</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>".$value->product->shipping['weight']." gram</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">Pembayaran</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>".$value->payment_gateway."</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">&nbsp;</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">&nbsp;</td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>PENGIRIM</b></td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>PENERIMA</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>".get_bloginfo('name')."</b></td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>".$value->meta_data['shipping_data']['receiver']." - ".$value->meta_data['shipping_data']['phone']."</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">".$shipper_origin_city['type']." ".$shipper_origin_city['city'].", ".$shipper_origin_city['subdistrict_name'].", ".$shipper_origin_city['province']."</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">".$value->meta_data['shipping_data']['address'].", ".$receiver_destination_city['type']." ".$receiver_destination_city['city'].", ".$receiver_destination_city['subdistrict_name'].", ".$shipper_origin_city['province']."</td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><hr></hr></td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><hr></hr></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>QTY</b></td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>PRODUK</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">".$value->quantity."</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">".$value->product_name."</td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">&nbsp;</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">&nbsp;</td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 							$html .= "popupWin.document.write('<tr style=\"vertical-align: unset;\">');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\">&nbsp;</td>');";
-	// 								$html .= "popupWin.document.write('<td style=\"width: 50%\"><b>Total: ".sejolisa_price_format($value->grand_total)."</b></td>');";
-	// 							$html .= "popupWin.document.write('</tr>');";
-	// 						$html .= "popupWin.document.write('</tbody>');";
-	// 					$html .= "popupWin.document.write('</table>');";
-	// 				}
-	// 			$html .= "popupWin.document.write('</div>');";
-	//             // $html .= "popupWin.document.write(divToPrint);";
-	//             $html .= "popupWin.document.write('</body></html>');";
-	// 	        $html .= "popupWin.document.close();";
-	// 	        // $html .= "popupWin.print();";
-	       	
-	//        	endif;
-        
- //        endif;
-
- //        return wp_send_json( $html );
- //        // echo $html;
-	// }
 
 }

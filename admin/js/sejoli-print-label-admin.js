@@ -59,27 +59,19 @@
 	                nonce  : sejoli_print_label.print_shipment_label.nonce
 	            },
 	            success  : function(response) {
-	            	console.log(response);
-	            	var file = new Blob([response], { type: 'application/pdf' });
-					var fileURL = URL.createObjectURL(file);
-	            	// alert(file);
-					// window.open(response);
-					// window.open(response, "_blank");
+	            	// console.log(response);
+	            	var file 	  = new Blob([response], { type: 'application/pdf' });
+					var fileURL   = URL.createObjectURL(file);
 					var file_path = response;
-					var a = document.createElement('A');
-					a.href = file_path;
-					a.download = file_path.substr(file_path.lastIndexOf('/') + 1);
+					var a 		  = document.createElement('A');
+					a.href 		  = file_path;
+					a.download 	  = file_path.substr(file_path.lastIndexOf('/') + 1);
 					document.body.appendChild(a);
 					a.click();
-					document.body.removeChild(a);
-					// window.location.href = response;
-	            	// eval(response);
-	            	// alert(response);
-	                // sejoli.helper.unblockUI('.sejoli-table-holder');
-	                // sejoli_render_shipping_content(response);
+					document.body.removeChild(a);\
 	            },
 	            error: function (request, status, error) {
-	                console.log(error);
+	                // console.log(error);
 	            }
 	        });
 
@@ -98,17 +90,10 @@
                 if(proceed) {
 	                $("tbody input[type=checkbox]:checked").each(function(i, el){
 	                    order_id.push($(el).data('id'));
-	                    // alert(order_id);
 	                });
 
 	                if(0 < order_id.length) {
 	                	sejoli_print_shipment_label(order_id);
-	                	
-	                    // if('shipping' === status) {
-	                    //     sejoli_check_shipping(order_id);
-	                    // } else {
-	                    //     sejoli_direct_update(order_id, status);
-	                    // }
 	                } else {
 	                    alert('Anda belum memilih order');
 	                    return;
