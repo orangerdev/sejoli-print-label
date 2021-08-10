@@ -60,15 +60,15 @@
 	            },
 	            success  : function(response) {
 	            	// console.log(response);
-	            	var file 	  = new Blob([response], { type: 'application/pdf' });
-					var fileURL   = URL.createObjectURL(file);
+	            	var file = new Blob([response], { type: 'application/pdf' });
+					var fileURL = URL.createObjectURL(file);
 					var file_path = response;
-					var a 		  = document.createElement('A');
-					a.href 		  = file_path;
-					a.download 	  = file_path.substr(file_path.lastIndexOf('/') + 1);
+					var a = document.createElement('A');
+					a.href = file_path;
+					a.download = file_path.substr(file_path.lastIndexOf('/') + 1);
 					document.body.appendChild(a);
 					a.click();
-					document.body.removeChild(a);\
+					document.body.removeChild(a);
 	            },
 	            error: function (request, status, error) {
 	                // console.log(error);
