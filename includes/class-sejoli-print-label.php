@@ -159,7 +159,7 @@ class Sejoli_Print_Label {
 
 		$product = new Sejoli_Print_Label\Admin\Product( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_filter( 'sejoli/general/fields', $product, 'setup_print_label_setting_fields', 	42);
+		$this->loader->add_filter( 'sejoli/general/fields', $product, 'setup_print_label_setting_fields', 	40);
 	}
 
 	/**
