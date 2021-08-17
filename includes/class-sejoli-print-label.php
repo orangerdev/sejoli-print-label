@@ -67,15 +67,15 @@ class Sejoli_Print_Label {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		
+
 		if ( defined( 'SEJOLI_PRINT_LABEL_VERSION' ) ) {
-		
+
 			$this->version = SEJOLI_PRINT_LABEL_VERSION;
-		
+
 		} else {
-		
+
 			$this->version = '1.0.0';
-		
+
 		}
 
 		$this->plugin_name = 'sejoli-print-label';
@@ -83,7 +83,6 @@ class Sejoli_Print_Label {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_public_hooks();
 
 	}
 
@@ -106,12 +105,6 @@ class Sejoli_Print_Label {
 	private function load_dependencies() {
 
 		/**
-		 * The class responsible for integrating with database
-		 * @var [type]
-		 */
-		require_once SEJOLI_PRINT_LABEL_DIR . 'includes/class-sejoli-print-label-database.php';
-
-		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
@@ -127,16 +120,9 @@ class Sejoli_Print_Label {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once SEJOLI_PRINT_LABEL_DIR . 'admin/class-sejoli-print-label-admin.php';
-		require_once SEJOLI_PRINT_LABEL_DIR . 'admin/print-label-setting.php';
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once SEJOLI_PRINT_LABEL_DIR . 'public/class-sejoli-print-label-public.php';
+		require_once SEJOLI_PRINT_LABEL_DIR . 'admin/class-sejoli-print-label-product.php';
 
 		$this->loader = new Sejoli_Print_Label_Loader();
-
-		Sejoli_Print_Label\DBIntegration::connection();
 
 	}
 
@@ -168,30 +154,12 @@ class Sejoli_Print_Label {
 
 		$admin = new Sejoli_Print_Label\Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', 				$admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_ajax_sejoli-print-shipment-label', 	$admin, 'print_shipment_label', 1);
 
-		// Print Shipment Label
-		$this->loader->add_action( 'wp_ajax_sejoli-print-shipment-label', $admin, 'print_shipment_label', 1);
+		$product = new Sejoli_Print_Label\Admin\Product( $this->get_plugin_name(), $this->get_version() );
 
-		$print_label_setting = new Sejoli_Print_Label\Admin\PrintLabelSetting( $this->get_plugin_name(), $this->get_version() );
-		$this->loader->add_filter( 'sejoli/general/fields', $print_label_setting, 'setup_print_label_setting_fields', 	40);
-	}
-
-	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function define_public_hooks() {
-
-		$public = new Sejoli_Print_Label\Front( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $public, 'enqueue_scripts' );
-
+		$this->loader->add_filter( 'sejoli/general/fields', $product, 'setup_print_label_setting_fields', 	42);
 	}
 
 	/**
@@ -200,9 +168,9 @@ class Sejoli_Print_Label {
 	 * @since    1.0.0
 	 */
 	public function run() {
-		
+
 		$this->loader->run();
-	
+
 	}
 
 	/**
@@ -213,9 +181,9 @@ class Sejoli_Print_Label {
 	 * @return    string    The name of the plugin.
 	 */
 	public function get_plugin_name() {
-	
+
 		return $this->plugin_name;
-	
+
 	}
 
 	/**
@@ -225,9 +193,9 @@ class Sejoli_Print_Label {
 	 * @return    Sejoli_Print_Label_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
-	
+
 		return $this->loader;
-	
+
 	}
 
 	/**
@@ -237,9 +205,9 @@ class Sejoli_Print_Label {
 	 * @return    string    The version number of the plugin.
 	 */
 	public function get_version() {
-	
+
 		return $this->version;
-	
+
 	}
 
 }

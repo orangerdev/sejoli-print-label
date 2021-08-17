@@ -13,11 +13,11 @@
  * @package           Sejoli_Print_Label
  *
  * @wordpress-plugin
- * Plugin Name:       Sejoli Print Label
+ * Plugin Name:       Sejoli - Print Label
  * Plugin URI:        https://sejoli.co.id
- * Description:       Plugin Sejoli Print Label untuk Generate Label Pengiriman.
+ * Description:       Plugin untuk Sejoli Standalone untuk membuat label pengiriman.
  * Version:           1.0.0
- * Author:            Sejoli Team
+ * Author:            Sejoli
  * Author URI:        https://sejoli.co.id
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -40,6 +40,16 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'SEJOLI_PRINT_LABEL_VERSION', '1.0.0' );
 define( 'SEJOLI_PRINT_LABEL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SEJOLI_PRINT_LABEL_URL', plugin_dir_url( __FILE__ ) );
+
+// Set up paths to include DOMPDF
+$plugin_path = plugin_dir_path( __FILE__ );
+define( 'SEJOLI_JNE_DOMPDF', $plugin_path . 'vendor/dompdf/' );
+
+// Set up directory to save PDF
+$upload_dir = wp_upload_dir();
+
+define( 'SEJOLI_JNE_UPLOAD_DIR', $upload_dir['basedir'] . '/label-pengiriman');
+define( 'SEJOLI_JNE_UPLOAD_URL', $upload_dir['baseurl'] . '/label-pengiriman');
 
 if(version_compare(PHP_VERSION, '7.2.1') < 0 && !class_exists( 'WP_CLI' )) :
 
@@ -77,7 +87,7 @@ else :
 	function activate_sejoli_print_label() {
 
 		require_once plugin_dir_path( __FILE__ ) . 'includes/class-sejoli-print-label-activator.php';
-		
+
 		Sejoli_Print_Label_Activator::activate();
 
 	}
@@ -89,7 +99,7 @@ else :
 	function deactivate_sejoli_print_label() {
 
 		require_once plugin_dir_path( __FILE__ ) . 'includes/class-sejoli-print-label-deactivator.php';
-		
+
 		Sejoli_Print_Label_Deactivator::deactivate();
 
 	}
@@ -101,6 +111,7 @@ else :
 	 * The core plugin class that is used to define internationalization,
 	 * admin-specific hooks, and public-facing site hooks.
 	 */
+	require_once SEJOLI_PRINT_LABEL_DIR . 'vendor/autoload.php';
 	require plugin_dir_path( __FILE__ ) . 'includes/class-sejoli-print-label.php';
 
 	/**

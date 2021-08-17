@@ -1,19 +1,8 @@
 <?php
 namespace Sejoli_Print_Label;
 
-require_once SEJOLI_PRINT_LABEL_DIR . 'vendor/autoload.php';
-
 use Dompdf\Dompdf;
 use Dompdf\Options;
-
-// Set up paths to include DOMPDF
-$plugin_path = plugin_dir_path( __FILE__ );
-define( 'SEJOLI_JNE_DOMPDF', $plugin_path . 'vendor/dompdf/' );
-
-// Set up directory to save PDF
-$upload_dir = wp_upload_dir();
-define( 'SEJOLI_JNE_UPLOAD_DIR', $upload_dir['basedir'] . '/label-pengiriman');
-define( 'SEJOLI_JNE_UPLOAD_URL', $upload_dir['baseurl'] . '/label-pengiriman');
 
 /**
  * The admin-specific functionality of the plugin.
@@ -70,29 +59,6 @@ class Admin {
 	}
 
 	/**
-	 * Register the stylesheets for the admin area.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Sejoli_Print_Label_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Sejoli_Print_Label_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/sejoli-print-label-admin.css', array(), $this->version, 'all' );
-
-	}
-
-	/**
 	 * Register the JavaScript for the admin area.
 	 *
 	 * @since    1.0.0
@@ -140,7 +106,7 @@ class Admin {
 
             require SEJOLISA_DIR . 'json/subdistrict.json';
             $json_data = ob_get_contents();
-            
+
             ob_end_clean();
 
             $subdistricts        = json_decode($json_data, true);
@@ -162,7 +128,7 @@ class Admin {
      * @return  json
      */
 	public function print_shipment_label(){
-		
+
 		$params = wp_parse_args( $_POST, array(
             'orders' => NULL,
             'nonce'  => NULL
@@ -178,7 +144,7 @@ class Admin {
         if( wp_verify_nonce( $params['nonce'], 'sejoli-print-shipment-label') ) :
 
             unset( $params['nonce'] );
-  
+
 	        $response = sejolisa_get_orders(['ID' => $params['orders'] ]);
 
 	        if(false !== $response['valid']) :
@@ -309,7 +275,7 @@ class Admin {
 		file_put_contents( $file_path, $output);
 		$invoice_url = SEJOLI_JNE_UPLOAD_URL . '/'. $file_name;
 		return wp_send_json($invoice_url);
-	
+
 	}
 
 }
