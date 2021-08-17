@@ -30,23 +30,23 @@
 	 */
 
 	$(window).load(function() {
-	 	
+
 	 	// executes when complete page is fully loaded, including all frames, objects and images
 		$('select.update-order-select').append('<option value="print-shipment-label">Cetak Label Pengiriman</option>');
-	
+
 	});
 
 	$(document).ready(function($){
 
         $('body').on( 'change', 'select.update-order-select', function(e){
         	e.preventDefault();
-  
+
         	if($(this).val() == 'print-shipment-label'){
-  
-        		$(this).parent().find('.button').removeClass('update-order').addClass('print-shipment-label');	
+
+        		$(this).parent().find('.button').removeClass('update-order').addClass('print-shipment-label');
 
         	}
-  
+
         });
 
         let sejoli_print_shipment_label = function(order_id) {
@@ -58,8 +58,12 @@
 	                orders : order_id,
 	                nonce  : sejoli_print_label.print_shipment_label.nonce
 	            },
+				beforeSend: function() {
+					sejoli.helper.blockUI('.sejoli-table-holder');
+				},
 	            success  : function(response) {
-	            	// console.log(response);
+	            	sejoli.helper.unblockUI('.sejoli-table-holder');
+
 	            	var file = new Blob([response], { type: 'application/pdf' });
 					var fileURL = URL.createObjectURL(file);
 					var file_path = response;
@@ -78,13 +82,13 @@
 	    }
 
         $(document).on('click', '.print-shipment-label', function(){
-  
+
             let proceed  = true;
             let order_id = [];
             let status   = $(this).parent().find('select[name=update-order-select]').val();
 
             if('print-shipment-label' == status) {
-            
+
                 proceed = confirm('Anda yakin akan melakukan pencetakan label pengiriman pada order yang dipilih?');
 
                 if(proceed) {
@@ -99,7 +103,7 @@
 	                    return;
 	                }
 	            }
-   
+
             }
 
         });
