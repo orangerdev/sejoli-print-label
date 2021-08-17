@@ -67,15 +67,15 @@ class Product {
 					->set_classes('sejoli-with-help'),
 
 				Field::make('text', 'print_label_invoice_text', __('No. Invoice (Text Label)', 'sejoli-print-label'))
-	                ->set_default_value(__('Nomor Invoice', 'sejoli-print-label'))
+	                ->set_default_value(__('INV', 'sejoli-print-label'))
 	                ->set_required(true),
 
 	            Field::make('text', 'print_label_shipper_text', __('Penerima (Text Label)', 'sejoli-print-label'))
-	                ->set_default_value(__('Penerima', 'sejoli-print-label'))
+	                ->set_default_value(__('PENERIMA', 'sejoli-print-label'))
 	                ->set_required(true),
 
 	            Field::make('text', 'print_label_receiver_text', __('Pengirim (Text Label)', 'sejoli-print-label'))
-	                ->set_default_value(__('Pengirim', 'sejoli-print-label'))
+	                ->set_default_value(__('PENGIRIM', 'sejoli-print-label'))
 	                ->set_required(true),
 
 	            Field::make('checkbox', 'print_label_phone_visible', __('Tampilkan No. Telepon Pengirim', 'sejoli-print-label'))

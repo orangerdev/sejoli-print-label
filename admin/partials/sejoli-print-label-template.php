@@ -11,7 +11,7 @@ $html .= '<html><head><meta charset="utf-8"></head><body>';
 			$html .= '<table style="width: 88.5mm">';
 				$html .= '<thead text-align: left;">';
 					$html .= '<tr style="vertical-align: middle;">';
-						$html .= '<td style="width: 43.05mm"><b>INV #'.$value->ID.'</b></td>';
+						$html .= '<td style="width: 43.05mm"><b>'.carbon_get_theme_option('print_label_invoice_text').' #'.$value->ID.'</b></td>';
 						$html .= '<td style="width: 43.05mm"><b>'.__('Label Pengiriman', 'sejoli-print-label').'</b></td>';
 					$html .= '</tr>';
 					$html .= '<tr style="vertical-align: middle;">';
@@ -55,16 +55,20 @@ $html .= '<html><head><meta charset="utf-8"></head><body>';
 						$html .= '<td style="width: 43.05mm">&nbsp;</td>';
 					$html .= '</tr>';
 					$html .= '<tr style="vertical-align: middle;">';
-						$html .= '<td style="width: 43.05mm"><b>'.__('PENGIRIM', 'sejoli-print-label').'</b></td>';
-						$html .= '<td style="width: 43.05mm"><b>'.__('PENERIMA', 'sejoli-print-label').'</b></td>';
+						$html .= '<td style="width: 43.05mm"><b>'.carbon_get_theme_option('print_label_receiver_text').'</b></td>';
+						$html .= '<td style="width: 43.05mm"><b>'.carbon_get_theme_option('print_label_shipper_text').'</b></td>';
 					$html .= '</tr>';
 					$html .= '</tr>';
 					$html .= '<tr style="vertical-align: middle;">';
-						$html .= '<td style="width: 43.05mm"><b>'.get_bloginfo('name').'</b></td>';
+						if(true === boolval(carbon_get_theme_option('print_label_phone_visible'))){
+							$html .= '<td style="width: 43.05mm"><b>'.carbon_get_theme_option('print_label_store_name').' - '.carbon_get_theme_option('print_label_store_phone').'</b></td>';
+						} else {
+							$html .= '<td style="width: 43.05mm"><b>'.carbon_get_theme_option('print_label_store_name').'</b></td>';
+						}
 						$html .= '<td style="width: 43.05mm"><b>'.$value->meta_data['shipping_data']['receiver'].' - '.$value->meta_data['shipping_data']['phone'].'</b></td>';
 					$html .= '</tr>';
 					$html .= '<tr style="vertical-align: middle;">';
-						$html .= '<td style="width: 43.05mm">'.$shipper_origin_city['type'].' '.$shipper_origin_city['city'].', '.$shipper_origin_city['subdistrict_name'].', '.$shipper_origin_city['province'].'</td>';
+						$html .= '<td style="width: 43.05mm">'.carbon_get_theme_option('print_label_store_address').'</td>';
 						$html .= '<td style="width: 43.05mm">'.$value->meta_data['shipping_data']['address'].', '.$receiver_destination_city['type'].' '.$receiver_destination_city['city'].', '.$receiver_destination_city['subdistrict_name'].', '.$shipper_origin_city['province'].'</td>';
 					$html .= '</tr>';
 					$html .= '<tr style="vertical-align: middle;">';
@@ -83,7 +87,7 @@ $html .= '<html><head><meta charset="utf-8"></head><body>';
 						$html .= '<td style="width: 43.05mm"><b>'.__('PRODUK', 'sejoli-print-label').'</b></td>';
 					$html .= '</tr>';
 					$html .= '<tr style="vertical-align: middle;">';
-						$html .= '<td style="width: 43.05mm">'.$value->quantity.'</td>';
+						$html .= '<td style="width: 43.05mm">'.$value->quantity.' '.carbon_get_theme_option('print_label_item_text').'</td>';
 						$html .= '<td style="width: 43.05mm">'.$value->product_name.'</td>';
 					$html .= '</tr>';
 					foreach ($value->meta_data['variants'] as $variants) {
