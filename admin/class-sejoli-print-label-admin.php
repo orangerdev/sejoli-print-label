@@ -149,7 +149,6 @@ class Admin {
 
 	        if(false !== $response['valid']) :
 	        	
-			  	$html = '';
 			  	require_once( plugin_dir_path( __FILE__ ) . 'partials/sejoli-print-label-template.php' );
 
 			endif;
