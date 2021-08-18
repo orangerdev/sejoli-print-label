@@ -17,7 +17,7 @@
 		$shipper_origin_city 	   = $this->get_subdistrict_detail($shipper_origin_id);
 	?>
 		<div class="label-item" style="width: 88.5mm; height: auto; border: 2px solid #000; margin-top: 0.5em; margin-right: 0.5em; margin-bottom: 5mm; float:left; padding: 10px;">
-			<table style="width: 88.5mm">
+			<table style="width: 88.5mm; font-size: 90%;">
 				<thead style="text-align: left;">
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><b><?php echo carbon_get_theme_option('print_label_invoice_text').' #'.$value->ID; ?></b></td>
