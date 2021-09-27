@@ -7,6 +7,11 @@
 	<meta charset="utf-8">
 </head>
 <body>
+	<style>
+		body{
+			font-family: Tahoma, sans-serif;
+		}
+	</style>
 	<div class="labelarea" style="width:100%; height: 100%; display:inline-block; margin-top: 0em; width: 100%;">
 	<?php
 	$count = 1;
@@ -116,10 +121,13 @@
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><div style="height: 1px;"></div></td>
 						<td style="width: 43.05mm"><div style="height: 1px;"></div></td>
+					</tr>
+					<?php if(true === boolval(carbon_get_theme_option('print_label_total_price'))): ?>	
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm">&nbsp;</td>
 						<td style="width: 43.05mm"><b><?php echo __('TOTAL', 'sejoli-print-label').' : '.sejolisa_price_format($value->grand_total); ?></b></td>
 					</tr>
+					<?php endif; ?>
 				</tbody>
 			</table>
 		</div>
