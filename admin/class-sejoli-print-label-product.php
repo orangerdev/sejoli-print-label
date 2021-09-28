@@ -82,6 +82,10 @@ class Product {
 	                ->set_option_value('yes')
 	                ->set_default_value(true),
 
+	            Field::make('checkbox', 'print_label_total_price', __('Tampilkan Total Biaya', 'sejoli-print-label'))
+	                ->set_option_value('yes')
+	                ->set_default_value(true),
+
 	            Field::make('text', 'print_label_item_text', __('Item (Text Label)', 'sejoli-print-label'))
 	                ->set_default_value(__('Item', 'sejoli-print-label'))
 	                ->set_required(true),
