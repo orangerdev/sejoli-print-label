@@ -46,7 +46,7 @@
 						<td style="width: 43.05mm"><?php echo __('Kurir', 'sejoli-print-label'); ?></td>
 						<td style="width: 43.05mm"><b><?php echo $value->meta_data['shipping_data']['courier'].' - '.$value->meta_data['shipping_data']['service']; ?></b></td>
 					</tr>
-					<?php if($value->meta_data['shipping_data']['resi_number']): ?>
+					<?php if(isset($value->meta_data['shipping_data']['resi_number'])): ?>
 						<tr style="vertical-align: middle;">
 							<td style="width: 43.05mm"><?php echo __('No. Resi', 'sejoli-print-label'); ?></td>
 							<td style="width: 43.05mm"><b><?php echo $value->meta_data['shipping_data']['resi_number']; ?></b></td>
