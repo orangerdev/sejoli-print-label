@@ -56,6 +56,9 @@ class Product {
 	                ->set_required(true)
 					->set_default_value(get_bloginfo('name')),
 
+				Field::make('image', 'print_label_store_logo', __('Logo', 'sejoli-print-label'))
+					->set_help_text(__('Dianjurkan panjang logo tidak melebihi 200px dengan tinggi tidak lebih dari 50px', 'sejoli-print-label')),
+
 	            Field::make('textarea', 'print_label_store_address', __('Alamat Pengirim', 'sejoli-print-label'))
 	                ->set_required(true),
 

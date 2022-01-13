@@ -20,10 +20,39 @@
 		$receiver_destination_city = $this->get_subdistrict_detail($receiver_destination_id);
 		$shipper_origin_id   	   = $value->product->shipping['origin'];
 		$shipper_origin_city 	   = $this->get_subdistrict_detail($shipper_origin_id);
+
+		$image_id = carbon_get_theme_option('print_label_store_logo');
 	?>
 		<div class="label-item" style="width: 88.5mm; height: auto; border: 2px solid #000; margin-top: 0.5em; margin-right: 0.5em; margin-bottom: 5mm; float:left; padding: 10px;">
 			<table style="width: 88.5mm; font-size: 90%;">
 				<thead style="text-align: left;">
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm">
+							<b>
+							<?php
+								if(!empty($image_id)) :
+							        $image = wp_get_attachment_image_src($image_id, $size);
+							        if(is_array($image) && isset($image[0])) :
+							            echo '<img src="'.$image[0].'" alt="" style="width: 90%;"\>';
+							        endif;
+							    endif;
+							?>
+							</b>
+						</td>
+						<td style="width: 43.05mm"><b><?php echo carbon_get_theme_option('print_label_store_name'); ?></b></td>
+					</tr>
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
+						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
+					</tr>
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm"><div style="border-bottom: 1px dashed #999;"></div></td>
+						<td style="width: 43.05mm"><div style="border-bottom: 1px dashed #999;"></div></td>
+					</tr>
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm"><div style="height: 1px;"></div></td>
+						<td style="width: 43.05mm"><div style="height: 1px;"></div></td>
+					</tr>
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><b><?php echo carbon_get_theme_option('print_label_invoice_text').' #'.$value->ID; ?></b></td>
 						<td style="width: 43.05mm"><b><?php echo __('Label Pengiriman', 'sejoli-print-label'); ?></b></td>
