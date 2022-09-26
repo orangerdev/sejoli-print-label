@@ -22,6 +22,7 @@
 		$shipper_origin_city 	   = $this->get_subdistrict_detail($shipper_origin_id);
 
 		$image_id = carbon_get_theme_option('print_label_store_logo');
+		$size = 'medium';
 	?>
 		<div class="label-item" style="width: 88.5mm; height: auto; border: 2px solid #000; margin-top: 0.5em; margin-right: 0.5em; margin-bottom: 5mm; float:left; padding: 10px;">
 			<table style="width: 88.5mm; font-size: 90%;">
@@ -111,7 +112,7 @@
 					</tr>
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><?php echo carbon_get_theme_option('print_label_store_address'); ?></td>
-						<td style="width: 43.05mm"><?php echo $value->meta_data['shipping_data']['address'].', '.$receiver_destination_city['type'].' '.$receiver_destination_city['city'].', '.$receiver_destination_city['subdistrict_name'].', '.$shipper_origin_city['province']; ?></td>
+						<td style="width: 43.05mm"><?php echo $value->meta_data['shipping_data']['address'].', '.$receiver_destination_city['type'].' '.$receiver_destination_city['city'].', '.$receiver_destination_city['subdistrict_name'].', '.$receiver_destination_city['province']; ?></td>
 					</tr>
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
